@@ -1,2 +1,2 @@
 export { lazyResource, type LazyResourceOptions } from "./lib/lazy-resource";
-export { takeLazyResource } from "./lib/take-lazy-resource";
+export { takeLazyResource, type TakeLazyResourceOptions } from "./lib/take-lazy-resource";

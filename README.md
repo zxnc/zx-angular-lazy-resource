@@ -185,22 +185,47 @@ lazyResource(() => api.getBrands(), [], { injector });      // injector via opti
 lazyResource(() => api.getBrands(), [], { id, injector });  // id + injector
 ```
 
-### `takeLazyResource<T>(ref, injector?)`
+### `takeLazyResource<T>(ref, optionsOrInjector?)`
 
-| Param      | Type                  | Description                                                                                          |
-| ---------- | --------------------- | --------------------------------------------------------------------------------------------------- |
-| `ref`      | `ResourceRef<T>`      | The resource to await. Works with `lazyResource` and with a plain `resource()`.                     |
-| `injector` | `Injector` (optional) | Reuses the injector captured by `lazyResource`; otherwise falls back to `inject(Injector)`.         |
+| Param               | Type                                  | Description                                                                                  |
+| ------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `ref`               | `ResourceRef<T>`                      | The resource to await. Works with `lazyResource` and with a plain `resource()`.              |
+| `optionsOrInjector` | `TakeLazyResourceOptions \| Injector` | Optional. An options object (see below) or, for backwards compatibility, a bare `Injector`.  |
+
+`TakeLazyResourceOptions`:
+
+| Property   | Type                  | Description                                                                                  |
+| ---------- | --------------------- | -------------------------------------------------------------------------------------------- |
+| `reload`   | `boolean` (optional)  | When `true`, force a fresh fetch (`ref.reload()`) and resolve with the reloaded value.       |
+| `injector` | `Injector` (optional) | Reuses the injector captured by `lazyResource`; otherwise falls back to `inject(Injector)`.  |
 
 **Returns** `Promise<T>` that:
 
 - **resolves** with the first `'resolved'` (or `'local'`) value, and
 - **rejects** with the resource's error if the loader fails.
 
+#### Fresh data on every call
+
+By default `takeLazyResource` resolves with the resource's cached value once it
+has loaded. Pass `{ reload: true }` to force a refetch instead: it calls
+`ref.reload()`, skips the stale cached value, and resolves with the freshly
+loaded one.
+
+```ts
+// Reuses the cached value (loads once, then cached):
+const brands = await takeLazyResource(store.brands);
+
+// Always refetches and resolves with up-to-date data:
+const fresh = await takeLazyResource(store.brands, { reload: true });
+```
+
+If a reload turns out to be unnecessary or unsupported (e.g. a load is already
+in flight), the first settled value is used instead, so the call never hangs.
+
 > 💡 `takeLazyResource` can be called from anywhere — event handlers, `async`
 > methods, etc. — because `lazyResource` captures the injection context for you.
 > For a plain (non-lazy) `resource()` called outside an injection context, pass
-> the `injector` argument explicitly.
+> the `injector` (via `{ injector }`) explicitly.
 
 ---
 
@@ -226,7 +251,10 @@ exactly once. Because the wrapper is a transparent `Proxy`, existing call sites
 (`.value()`, `.status()`, …) keep working unchanged.
 
 `takeLazyResource` listens to the resource's `status` signal (via
-`toObservable`) and resolves the promise when it first settles.
+`toObservable`) and resolves the promise when it first settles. With
+`{ reload: true }` it first calls `ref.reload()`, then waits for the resource to
+enter a `'loading'`/`'reloading'` state and resolve again — skipping the stale
+cached value so you get fresh data.
 
 ---
 
@@ -236,7 +264,8 @@ exactly once. Because the wrapper is a transparent `Proxy`, existing call sites
   resource. Call `ref.reload()` to fetch again.
 - **`takeLazyResource` resolves on the first settled state.** If a `reload()` is
   in progress, `value()` may still hold the previous value (Angular's normal
-  `'reloading'` behaviour).
+  `'reloading'` behaviour). Use `{ reload: true }` to force a fresh fetch and
+  resolve with the reloaded value.
 - **SSR:** loading is access-driven; if you render on the server, accessing the
   resource during rendering triggers the load there too. Pass an `id` to cache
   the server-resolved value via `TransferState` and skip the loader on the
