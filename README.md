@@ -133,17 +133,57 @@ const brands = await store.brandsAsync();
 
 ## API
 
-### `lazyResource<T>(loader, defaultValue, injector?)`
+### `lazyResource<T>(loader, defaultValue, optionsOrInjector?)`
 
-| Param          | Type                  | Description                                                                                   |
-| -------------- | --------------------- | --------------------------------------------------------------------------------------------- |
-| `loader`       | `() => Promise<T>`    | Async function that fetches the data. Runs once, on first access.                             |
-| `defaultValue` | `T`                   | Value exposed by `value()` before the loader resolves.                                        |
-| `injector`     | `Injector` (optional) | Only needed when called **outside** an injection context. Defaults to `inject(Injector)`.     |
+| Param               | Type                              | Description                                                                                |
+| ------------------- | --------------------------------- | ------------------------------------------------------------------------------------------ |
+| `loader`            | `() => Promise<T>`                | Async function that fetches the data. Runs once, on first access.                          |
+| `defaultValue`      | `T`                               | Value exposed by `value()` before the loader resolves.                                     |
+| `optionsOrInjector` | `LazyResourceOptions \| Injector` | Optional. An options object (see below) or, for backwards compatibility, a bare `Injector`. |
+
+`LazyResourceOptions`:
+
+| Property   | Type                  | Description                                                                                       |
+| ---------- | --------------------- | ------------------------------------------------------------------------------------------------- |
+| `id`       | `string` (optional)   | Enables Angular's **SSR `TransferState` caching** for this resource (see below).                  |
+| `injector` | `Injector` (optional) | Only needed when called **outside** an injection context. Defaults to `inject(Injector)`.         |
 
 **Returns** `ResourceRef<T>` — a normal resource ref (`value()`, `status()`,
 `isLoading()`, `hasValue()`, `error()`, `reload()`, …). The only difference is
 that the loader is deferred until the first property access.
+
+#### SSR caching with `TransferState`
+
+When an app renders on the server, the resource loader runs once to produce the
+initial HTML; during hydration the browser would normally run the same loader
+again. Provide an `id` to reuse the server result: Angular stores the resolved
+value in `TransferState` on the server and uses it on the client to initialize
+the resource in a `'resolved'` state.
+
+```ts
+@Service()
+export class UserStore {
+  private api = inject(UserApi);
+
+  // The value resolved on the server is reused on the client — no second request.
+  readonly user = lazyResource(() => this.api.getUser(), null, { id: 'current-user' });
+}
+```
+
+The `id` must be **unique within your application** and **identical on the
+server and the client** so Angular can match the cached entry.
+
+> ⚠️ Because the cached value is serialized into the page's HTML, avoid using an
+> `id` for resources that load **user-specific** data when the rendered HTML can
+> be cached or shared between users.
+
+The third argument is still backwards compatible with a bare `Injector`:
+
+```ts
+lazyResource(() => api.getBrands(), [], injector);          // injector only
+lazyResource(() => api.getBrands(), [], { injector });      // injector via options
+lazyResource(() => api.getBrands(), [], { id, injector });  // id + injector
+```
 
 ### `takeLazyResource<T>(ref, injector?)`
 
@@ -198,7 +238,9 @@ exactly once. Because the wrapper is a transparent `Proxy`, existing call sites
   in progress, `value()` may still hold the previous value (Angular's normal
   `'reloading'` behaviour).
 - **SSR:** loading is access-driven; if you render on the server, accessing the
-  resource during rendering triggers the load there too.
+  resource during rendering triggers the load there too. Pass an `id` to cache
+  the server-resolved value via `TransferState` and skip the loader on the
+  client during hydration.
 - **Reading is what triggers loading.** A resource that nothing ever reads will
   never fire its request — which is exactly the point.
 
