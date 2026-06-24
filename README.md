@@ -20,7 +20,7 @@ Angular's `resource()` is great, but its loader runs **as soon as the resource i
 created**. If you keep a bunch of shared resources in a service…
 
 ```ts
-@Injectable({ providedIn: 'root' })
+@Service()
 export class GlobalStore {
   private api = inject(Api);
 
@@ -38,7 +38,7 @@ need yet.
 `lazyResource()` fixes this: each resource waits until it is actually read.
 
 ```ts
-@Injectable({ providedIn: 'root' })
+@Service()
 export class GlobalStore {
   private api = inject(Api);
 
@@ -67,10 +67,10 @@ present in any Angular app.
 ### 1. Declare lazy resources
 
 ```ts
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { lazyResource } from 'zx-angular-lazy-resource';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CatalogStore {
   private api = inject(CatalogApi);
 
@@ -115,7 +115,7 @@ async function loadActiveBrands(store: CatalogStore) {
 A convenient pattern is to expose an `...Async` helper next to each resource:
 
 ```ts
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CatalogStore {
   private api = inject(CatalogApi);
 
