@@ -1,4 +1,4 @@
-import type { Injector } from '@angular/core';
+import type { Injector } from "@angular/core";
 
 /**
  * Internal registry mapping each lazy resource proxy to the `Injector` it was

@@ -1,7 +1,7 @@
-import { Injector, ResourceRef, inject } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
-import { filter, firstValueFrom, map } from 'rxjs';
-import { LAZY_RESOURCE_INJECTORS } from './injector-registry';
+import { Injector, ResourceRef, inject } from "@angular/core";
+import { toObservable } from "@angular/core/rxjs-interop";
+import { filter, firstValueFrom, map } from "rxjs";
+import { LAZY_RESOURCE_INJECTORS } from "./injector-registry";
 
 /**
  * Triggers a (lazy) resource and resolves with its **first settled value**.
@@ -42,10 +42,10 @@ export function takeLazyResource<T>(ref: ResourceRef<T>, injector?: Injector): P
 
   return firstValueFrom(
     status$.pipe(
-      filter((s) => s === 'resolved' || s === 'local' || s === 'error'),
+      filter((s) => s === "resolved" || s === "local" || s === "error"),
       map((s) => {
-        if (s === 'error') {
-          throw ref.error() ?? new Error('zx-angular-lazy-resource: the resource failed to load.');
+        if (s === "error") {
+          throw ref.error() ?? new Error("zx-angular-lazy-resource: the resource failed to load.");
         }
         return ref.value();
       }),

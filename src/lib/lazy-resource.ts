@@ -1,5 +1,5 @@
-import { Injector, ResourceRef, inject, resource, signal, untracked } from '@angular/core';
-import { LAZY_RESOURCE_INJECTORS } from './injector-registry';
+import { Injector, ResourceRef, inject, resource, signal, untracked } from "@angular/core";
+import { LAZY_RESOURCE_INJECTORS } from "./injector-registry";
 
 /**
  * Creates a **lazy** Angular `resource()` whose `loader` does not run when the
@@ -40,11 +40,7 @@ import { LAZY_RESOURCE_INJECTORS } from './injector-registry';
  * }
  * ```
  */
-export function lazyResource<T>(
-  loader: () => Promise<T>,
-  defaultValue: T,
-  injector?: Injector,
-): ResourceRef<T> {
+export function lazyResource<T>(loader: () => Promise<T>, defaultValue: T, injector?: Injector): ResourceRef<T> {
   const ownInjector = injector ?? inject(Injector);
   const enabled = signal(false);
 
