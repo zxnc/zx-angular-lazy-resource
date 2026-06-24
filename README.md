@@ -58,7 +58,7 @@ export class GlobalStore {
 npm install zx-angular-lazy-resource
 ```
 
-**Peer dependencies:** `@angular/core` (>= 19) and `rxjs` (>= 7) — both already
+**Peer dependencies:** `@angular/core` (>= 22) and `rxjs` (>= 7) — both already
 present in any Angular app.
 
 ---
@@ -207,10 +207,12 @@ exactly once. Because the wrapper is a transparent `Proxy`, existing call sites
 
 | Package        | Version  |
 | -------------- | -------- |
-| `@angular/core`| >= 19    |
+| `@angular/core`| >= 22    |
 | `rxjs`         | >= 7     |
 
-`resource()` is stable in Angular 20+ (available as experimental earlier).
+`resource()` is stable as of Angular 22 (available as experimental in earlier
+versions). This package targets the stable API, so Angular 22 is the minimum
+supported version.
 
 ---
 
