@@ -2,9 +2,9 @@
 
 > Lazy helpers for Angular's signal-based `resource()` — defer loading until first access, and `await` the first settled value as a Promise.
 
-[![npm version](https://img.shields.io/npm/v/zx-angular-lazy-resource.svg)](https://www.npmjs.com/package/zx-angular-lazy-resource)
+[![npm version](https://img.shields.io/npm/v/%40zxnc%2Fzx-angular-lazy-resource.svg)](https://www.npmjs.com/package/@zxnc/zx-angular-lazy-resource)
 [![CI](https://github.com/zxnc/zx-angular-lazy-resource/actions/workflows/ci.yml/badge.svg)](https://github.com/zxnc/zx-angular-lazy-resource/actions/workflows/ci.yml)
-[![license](https://img.shields.io/npm/l/zx-angular-lazy-resource.svg)](./LICENSE)
+[![license](https://img.shields.io/npm/l/%40zxnc%2Fzx-angular-lazy-resource.svg)](./LICENSE)
 
 Two tiny, dependency-light utilities built on top of Angular's `resource()`:
 
@@ -55,7 +55,7 @@ export class GlobalStore {
 ## Installation
 
 ```bash
-npm install zx-angular-lazy-resource
+npm install @zxnc/zx-angular-lazy-resource
 ```
 
 **Peer dependencies:** `@angular/core` (>= 22) and `rxjs` (>= 7) — both already
@@ -69,7 +69,7 @@ present in any Angular app.
 
 ```ts
 import { Service, inject } from '@angular/core';
-import { lazyResource } from 'zx-angular-lazy-resource';
+import { lazyResource } from '@zxnc/zx-angular-lazy-resource';
 
 @Service()
 export class CatalogStore {
