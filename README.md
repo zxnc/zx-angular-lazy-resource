@@ -121,6 +121,7 @@ export class CatalogStore {
   private api = inject(CatalogApi);
 
   readonly brands = lazyResource(() => this.api.getBrands(), []);
+  
   readonly brandsAsync = () => takeLazyResource(this.brands);
 }
 
