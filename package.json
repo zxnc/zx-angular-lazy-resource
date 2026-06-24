@@ -1,6 +1,6 @@
 {
   "name": "zx-angular-lazy-resource",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Lazy helpers for Angular's signal-based resource(): defer loading until first access, and await the first settled value as a Promise.",
   "type": "module",
   "main": "./dist/index.js",
