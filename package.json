@@ -1,5 +1,5 @@
 {
-  "name": "@zxnc/zx-angular-lazy-resource",
+  "name": "zx-angular-lazy-resource",
   "version": "2.0.0",
   "description": "Lazy helpers for Angular's signal-based resource(): defer loading until first access, and await the first settled value as a Promise.",
   "type": "module",
