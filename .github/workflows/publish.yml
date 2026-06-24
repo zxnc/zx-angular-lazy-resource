@@ -44,6 +44,17 @@ jobs:
             - name: Build
               run: npm run build
 
+            # Fail early with a clear message if the NPM_TOKEN secret is missing.
+            # (Without it, npm returns a confusing "404 Not Found" on publish.)
+            - name: Check NPM_TOKEN
+              run: |
+                if [ -z "$NODE_AUTH_TOKEN" ]; then
+                  echo "::error::NPM_TOKEN secret is missing. Add it under Settings -> Secrets and variables -> Actions."
+                  exit 1
+                fi
+              env:
+                NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
             # Publishes only if the version in package.json is not already on npm.
             # `prepublishOnly` (clean + build) runs automatically before publish.
             - name: Publish
